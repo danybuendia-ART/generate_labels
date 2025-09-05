@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impresion de etiquetas</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -188,6 +189,61 @@
                 width: 100%;
             }
         }
+
+        /* Estilos para etiqueta por hoja al imprimirla */
+        @media print {
+
+            body,
+            html {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .container,
+            .form-container,
+            .header,
+            form,
+            .preview-title {
+                display: none !important;
+            }
+
+            #previewSection {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .labels-grid {
+                display: grid !important;
+                grid-template-columns: repeat(var(--cols, 3), 1fr) !important;
+                gap: 8px !important;
+                page-break-inside: avoid;
+                width: 100vw !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .label-preview {
+                border: 2px solid #2d3748 !important;
+                padding: 10px !important;
+                font-size: 10px !important;
+                font-family: 'Courier New', monospace !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 0 !important;
+                min-width: 0 !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 
@@ -201,6 +257,19 @@
         <div class="form-container">
             <form id="labelForm">
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="labelsPerSheet">Cantidad de etiquetas por hoja</label>
+                        <input type="number" id="labelsPerSheet" name="labelsPerSheet" min="1" value="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="startNumber">Numeración inicial</label>
+                        <input type="number" id="startNumber" name="startNumber" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endNumber">Numeración final</label>
+                        <input type="number" id="endNumber" name="endNumber" min="1" value="6" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="nombreEmpresa">Nombre de empresa</label>
                         <input type="text" id="nombreEmpresa" name="nombreEmpresa" required>
@@ -217,38 +286,49 @@
                             required></textarea>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="packingSlipNumber">
                             Número de comprobante de embalaje:</label>
-                        <input type="text" id="packingSlipNumber" name="packingSlipNumber" required>
+                        <input type="text" id="packingSlipNumber" name="packingSlipNumber"
+                            oninput="barcode(this.value, 1)" required>
+                        <svg id="barcode1"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="purchaseOrderNumber">Número de orden de compra</label>
-                        <input type="text" id="purchaseOrderNumber" name="purchaseOrderNumber" required>
+                        <input type="text" id="purchaseOrderNumber" name="purchaseOrderNumber"
+                            oninput="barcode(this.value, 2)" required>
+                        <svg id="barcode2"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="customerProductId">Identificación del producto del cliente</label>
-                        <input type="text" id="customerProductId" name="customerProductId" required>
+                        <input type="text" id="customerProductId" name="customerProductId"
+                            oninput="barcode(this.value, 3)" required>
+                        <svg id="barcode3"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="mfrgPartNumber">Numero de pieza</label>
-                        <input type="text" id="mfrgPartNumber" name="mfrgPartNumber" required>
+                        <input type="text" id="mfrgPartNumber" name="mfrgPartNumber" oninput="barcode(this.value, 4)"
+                            required>
+                        <svg id="barcode4"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="quantity">Cantidad</label>
-                        <input type="number" id="quantity" name="quantity" min="1" required>
+                        <input type="number" id="quantity" name="quantity" min="1" oninput="barcode(this.value, 5)"
+                            required>
+                        <svg id="barcode5"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="packageId">ID del paquete</label>
-                        <input type="text" id="packageId" name="packageId" required>
+                        <input type="text" id="packageId" name="packageId" oninput="barcode(this.value, 6)" required>
+                        <svg id="barcode6"></svg>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="packageWeight">Peso del paquete (lkg)</label>
                         <input type="number" id="packageWeight" name="packageWeight" step="0.1" min="0" required>
                     </div>
@@ -271,8 +351,15 @@
     </div>
 
     <script>
-        let nombreEmpresa = document.getElementById('nombreEmpresa');
-
+        function barcode(valor, number) {
+            JsBarcode(`#barcode${number}`, valor, {
+                format: "CODE128",
+                lineColor: "#000",
+                width: 2,
+                height: 40,
+                displayValue: true
+            });
+        }
 
         function clearForm() {
             document.getElementById('labelForm').reset();
@@ -289,7 +376,6 @@
             document.body.innerHTML = printContent;
             window.print();
             document.body.innerHTML = originalContent;
-            //location.reload();
         }
 
         function previewLabel() {
@@ -312,24 +398,51 @@
                 packageWeight: document.getElementById('packageWeight').value
             };
 
-            const labelHTML = `
+            // Nuevos campos
+            const labelsPerSheet = parseInt(document.getElementById('labelsPerSheet').value, 10);
+            const startNumber = parseInt(document.getElementById('startNumber').value, 10);
+            const endNumber = parseInt(document.getElementById('endNumber').value, 10);
+
+            // Clona los SVG de los códigos de barras
+            function getBarcodeSVG(id) {
+                const svg = document.getElementById(id);
+                return svg && svg.innerHTML.trim() !== "" ? `<div>${svg.outerHTML}</div>` : "";
+            }
+
+            let labelsHTML = '<div class="labels-grid" style="display: grid; grid-template-columns: repeat(' + labelsPerSheet + ', 1fr); gap: 8px;">';
+
+            for (let i = startNumber; i <= endNumber; i++) {
+                labelsHTML += `
+        <div class="label-preview">
+            <div>
                 <div class="label-row"><strong>Nombre de la empresa:</strong> ${data.nombreEmpresa}</div>
                 <div class="label-row"><strong>Nombre del Contacto:</strong> ${data.NombreContacto}</div>
                 <div class="label-row"><strong>Direccion:</strong><br>${data.Direccion}</div>
                 <div class="label-row"><strong>Número de comprobante de embalaje: #:</strong> ${data.packingSlipNumber}</div>
+                ${getBarcodeSVG('barcode1')}
                 <div class="label-row"><strong>Número de orden de compra #:</strong> ${data.purchaseOrderNumber}</div>
+                ${getBarcodeSVG('barcode2')}
                 <div class="label-row"><strong>Identificación del producto del cliente:</strong> ${data.customerProductId}</div>
+                ${getBarcodeSVG('barcode3')}
                 <div class="label-row"><strong>Numero de pieza:</strong> ${data.mfrgPartNumber}</div>
+                ${getBarcodeSVG('barcode4')}
                 <div class="label-row"><strong>Cantidad:</strong> ${data.quantity}</div>
+                ${getBarcodeSVG('barcode5')}
                 <div class="label-row"><strong>ID del paquete:</strong> ${data.packageId}</div>
+                ${getBarcodeSVG('barcode6')}
                 <div class="label-row"><strong>Peso del paquete (lkg):</strong> ${data.packageWeight}</div>
-            `;
+            </div>
+            <div style="text-align:right; font-size:10px; margin-top:8px;">
+                Etiqueta ${i}
+            </div>
+        </div>
+        `;
+            }
+            labelsHTML += '</div>';
 
-            document.getElementById('labelPreview').innerHTML = labelHTML;
+            document.getElementById('labelPreview').innerHTML = labelsHTML;
             document.getElementById('previewSection').style.display = 'block';
-            //------------------------------------------------------------------------
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            // -------------- hace la animacion de desplazamiento --------------------
         }
     </script>
 </body>

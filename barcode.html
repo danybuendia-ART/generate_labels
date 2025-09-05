@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Código de Barras</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <h1>Generador de Código de Barras</h1>
+  <input type="text" id="barcode-input" placeholder="Introduce el texto o número">
+  <button onclick="generarCodigo()">Generar</button>
+  <br><br>
+  <svg id="barcode"></svg>
+
+  <script>
+    function generarCodigo() {
+      const valor = document.getElementById('barcode-input').value;
+      JsBarcode("#barcode", valor, {
+        format: "CODE128",
+        lineColor: "#000",
+        width: 2,
+        height: 60,
+        displayValue: true
+      });
+    }
+  </script>
+</body>
+</html>
