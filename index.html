@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impresion de etiquetas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2d3748;
+            color: white;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        textarea {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .preview-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .label-preview {
+            background: white;
+            border: 2px solid #2d3748;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .label-row {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .label-row strong {
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Impresiones de etiquetas</h1>
+            <p>Completa los datos del formulario para generar las etiquetas</p>
+        </div>
+
+        <div class="form-container">
+            <form id="labelForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombreEmpresa">Nombre de empresa</label>
+                        <input type="text" id="nombreEmpresa" name="nombreEmpresa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="NombreContacto">Nombre del Contacto</label>
+                        <input type="text" id="NombreContacto" name="NombreContacto" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="Direccion">Direccion</label>
+                        <textarea id="Direccion" name="Direccion" placeholder="Agrega la direccion completa aqui..."
+                            required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packingSlipNumber">
+                            Número de comprobante de embalaje:</label>
+                        <input type="text" id="packingSlipNumber" name="packingSlipNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purchaseOrderNumber">Número de orden de compra</label>
+                        <input type="text" id="purchaseOrderNumber" name="purchaseOrderNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerProductId">Identificación del producto del cliente</label>
+                        <input type="text" id="customerProductId" name="customerProductId" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mfrgPartNumber">Numero de pieza</label>
+                        <input type="text" id="mfrgPartNumber" name="mfrgPartNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Cantidad</label>
+                        <input type="number" id="quantity" name="quantity" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packageId">ID del paquete</label>
+                        <input type="text" id="packageId" name="packageId" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packageWeight">Peso del paquete (lkg)</label>
+                        <input type="number" id="packageWeight" name="packageWeight" step="0.1" min="0" required>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="previewLabel()">Vista de etiqueta</button>
+                    <button type="button" class="btn btn-primary" onclick="printLabel()">Imprimir Etiqueta</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Limpiar formulario</button>
+                </div>
+            </form>
+
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-title">Vista Previa</div>
+                <div class="label-preview" id="labelPreview">
+                    <!-- El contenido estara generado aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let nombreEmpresa = document.getElementById('nombreEmpresa');
+
+
+        function clearForm() {
+            document.getElementById('labelForm').reset();
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('labelPreview').innerHTML = '';
+        }
+        function printLabel() {
+            const printContent = document.getElementById('labelPreview').innerHTML;
+            if (!printContent) {
+                alert('Por favor completa los campos del formulario.');
+                return;
+            }
+            const originalContent = document.body.innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            //location.reload();
+        }
+
+        function previewLabel() {
+            const form = document.getElementById('labelForm');
+            if (!form.checkValidity()) {
+                alert('Por favor completa los campos del formulario.');
+                return;
+            }
+
+            const data = {
+                nombreEmpresa: nombreEmpresa.value,
+                NombreContacto: document.getElementById('NombreContacto').value,
+                Direccion: document.getElementById('Direccion').value.replace(/\n/g, '<br>'),
+                packingSlipNumber: document.getElementById('packingSlipNumber').value,
+                purchaseOrderNumber: document.getElementById('purchaseOrderNumber').value,
+                customerProductId: document.getElementById('customerProductId').value,
+                mfrgPartNumber: document.getElementById('mfrgPartNumber').value,
+                quantity: document.getElementById('quantity').value,
+                packageId: document.getElementById('packageId').value,
+                packageWeight: document.getElementById('packageWeight').value
+            };
+
+            const labelHTML = `
+                <div class="label-row"><strong>Nombre de la empresa:</strong> ${data.nombreEmpresa}</div>
+                <div class="label-row"><strong>Nombre del Contacto:</strong> ${data.NombreContacto}</div>
+                <div class="label-row"><strong>Direccion:</strong><br>${data.Direccion}</div>
+                <div class="label-row"><strong>Número de comprobante de embalaje: #:</strong> ${data.packingSlipNumber}</div>
+                <div class="label-row"><strong>Número de orden de compra #:</strong> ${data.purchaseOrderNumber}</div>
+                <div class="label-row"><strong>Identificación del producto del cliente:</strong> ${data.customerProductId}</div>
+                <div class="label-row"><strong>Numero de pieza:</strong> ${data.mfrgPartNumber}</div>
+                <div class="label-row"><strong>Cantidad:</strong> ${data.quantity}</div>
+                <div class="label-row"><strong>ID del paquete:</strong> ${data.packageId}</div>
+                <div class="label-row"><strong>Peso del paquete (lkg):</strong> ${data.packageWeight}</div>
+            `;
+
+            document.getElementById('labelPreview').innerHTML = labelHTML;
+            document.getElementById('previewSection').style.display = 'block';
+            //------------------------------------------------------------------------
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            // -------------- hace la animacion de desplazamiento --------------------
+        }
+    </script>
+</body>
+
+</html>
