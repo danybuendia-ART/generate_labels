@@ -197,48 +197,40 @@
         /* Estilos para etiqueta por hoja al imprimirla */
         .labels-grid {
             display: grid;
-            grid-template-columns: repeat(var(--cols, 3), 1fr);
-            gap: 8px;
+            grid-template-columns: 1fr;
+            /* Solo una columna */
+            gap: 24px;
             width: 100%;
             margin: 0 auto;
-            align-items: stretch;
+            justify-items: center;
+            /* Centrar horizontalmente */
+            align-items: center;
+            /* Centrar verticalmente */
+        }
+
+        .label-preview {
+            width: 80%;
+            /* Ajusta el ancho de la etiqueta */
+            margin: 0 auto;
+        }
+
+        .label-preview svg {
+            width: 140px !important;
+            /* Ajusta el ancho máximo */
+            height: 32px !important;
+            /* Ajusta la altura máxima */
+            max-width: 100%;
+            display: block;
+            margin: 0 auto 4px auto;
         }
 
         @media print {
-            .labels-grid {
-                display: grid !important;
-                grid-template-columns: repeat(var(--cols, 3), 1fr) !important;
-                gap: 8px !important;
-                page-break-inside: avoid;
-                width: 100vw !important;
-                height: 100vh !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
             .label-preview {
-                border: 2px solid #2d3748 !important;
-                padding: 10px !important;
-                font-size: 10px !important;
-                font-family: 'Courier New', monospace !important;
-                margin: 0 !important;
-                box-sizing: border-box !important;
-                width: 100% !important;
-                height: 100% !important;
-                min-height: 0 !important;
-                min-width: 0 !important;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
                 page-break-inside: avoid;
             }
 
-            .label-preview svg {
-                width: 100% !important;
-                height: 40px !important;
-                max-width: 100%;
-                display: block;
-                margin: 0 auto 4px auto;
+            .label-preview:nth-of-type(2n) {
+                page-break-after: always;
             }
         }
     </style>
@@ -260,7 +252,8 @@
                     </div>
                     <div class="form-group">
                         <label for="startNumber">Numeración inicial</label>
-                        <input type="number" id="startNumber" name="startNumber" min="1" value="1" oninput="plusnumeration(this.value)" required>
+                        <input type="number" id="startNumber" name="startNumber" min="1" value="1"
+                            oninput="plusnumeration(this.value)" required>
                     </div>
                     <div class="form-group">
                         <label for="endNumber">Numeración final</label>
@@ -352,19 +345,18 @@
             JsBarcode(`#barcode${number}`, valor, {
                 format: "CODE128",
                 lineColor: "#000",
-                width: 1.5, // Más delgado para que quepa más texto
-                height: 40,
+                width: 1,      // Más delgado
+                height: 24,    // Más bajo (ajusta aquí si quieres más pequeño)
                 displayValue: true,
                 margin: 0
             });
         }
-
         function plusnumeration(value) {
-        let labelsPerSheet = document.getElementById('labelsPerSheet').value;
-        
-        let plus = parseInt(value) + parseInt(labelsPerSheet) - 1;
-        document.getElementById('endNumber').value = plus;
-    }
+            let labelsPerSheet = document.getElementById('labelsPerSheet').value;
+
+            let plus = parseInt(value) + parseInt(labelsPerSheet) - 1;
+            document.getElementById('endNumber').value = plus;
+        }
 
         function clearForm() {
             document.getElementById('labelForm').reset();
@@ -390,18 +382,11 @@
                 return;
             }
 
-            // Nuevos campos
-            const labelsPerSheet = parseInt(document.getElementById('labelsPerSheet').value, 10);
             const startNumber = parseInt(document.getElementById('startNumber').value, 10);
             const endNumber = parseInt(document.getElementById('endNumber').value, 10);
 
-            // Calcular columnas (lo más cuadrado posible)
-            let totalLabels = endNumber - startNumber + 1;
-            let cols = Math.ceil(Math.sqrt(labelsPerSheet));
-            if (cols > totalLabels) cols = totalLabels;
-
-            // Usar CSS variable para columnas en impresión y preview
-            let labelsHTML = `<div class="labels-grid" style="--cols:${cols}; grid-template-columns: repeat(${cols}, 1fr); gap: 8px;">`;
+            // Solo una columna
+            let labelsHTML = `<div class="labels-grid">`;
 
             const data = {
                 nombreEmpresa: document.getElementById('nombreEmpresa').value,
@@ -416,7 +401,6 @@
                 packageWeight: document.getElementById('packageWeight').value
             };
 
-            // Clona los SVG de los códigos de barras
             function getBarcodeSVG(id) {
                 const svg = document.getElementById(id);
                 return svg && svg.innerHTML.trim() !== "" ? `<div>${svg.outerHTML}</div>` : "";
@@ -424,29 +408,29 @@
 
             for (let i = startNumber; i <= endNumber; i++) {
                 labelsHTML += `
-    <div class="label-preview">
-        <div>
-            <div style ="text-align: right;"><img src='./LogoSIR.png' style='width: 50px; height: 25px;'></div>
-            <div class="label-row"><strong>Nombre de la empresa:</strong> ${data.nombreEmpresa}</div>
-            <div class="label-row"><strong>Nombre del Contacto:</strong> ${data.NombreContacto}</div>
-            <div class="label-row"><strong>Direccion:</strong><br>${data.Direccion}</div>
-            <div class="label-row"><strong>Número de comprobante de embalaje: #:</strong> ${data.packingSlipNumber}</div>
-            ${getBarcodeSVG('barcode1')}
-            <div class="label-row"><strong>Número de orden de compra #:</strong> ${data.purchaseOrderNumber}</div>
-            ${getBarcodeSVG('barcode2')}
-            <div class="label-row"><strong>Identificación del producto del cliente:</strong> ${data.customerProductId}</div>
-            ${getBarcodeSVG('barcode3')}
-            <div class="label-row"><strong>Numero de pieza:</strong> ${data.mfrgPartNumber}</div>
-            ${getBarcodeSVG('barcode4')}
-            <div class="label-row"><strong>Cantidad:</strong> ${data.quantity}</div>
-            ${getBarcodeSVG('barcode5')}
-            <div class="label-row"><strong>ID del paquete:</strong> ${data.packageId}</div>
-            ${getBarcodeSVG('barcode6')}
-            <div class="label-row"><strong>Peso del paquete (lkg):</strong> ${data.packageWeight}</div>
-                <div style="text-align:right; font-size:10px; margin-top:8px;">Etiqueta ${i}</div>
-        </div>
+<div class="label-preview" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; width: 100%; max-width: 400px; text-align: rigth; font-size: 10px; line-height: 1.2; margin-bottom: 16px;">
+    <div>
+        <div style ="text-align: right;"><img src='./LogoSIR.png' style='width: 50px; height: 25px;'></div>
+        <div class="label-row"><strong>Nombre de la empresa:</strong> ${data.nombreEmpresa}</div>
+        <div class="label-row"><strong>Nombre del Contacto:</strong> ${data.NombreContacto}</div>
+        <div class="label-row"><strong>Direccion:</strong><br>${data.Direccion}</div>
+        <div class="label-row"><strong>Número de comprobante de embalaje: #:</strong> ${data.packingSlipNumber}</div>
+        ${getBarcodeSVG('barcode1')}
+        <div class="label-row"><strong>Número de orden de compra #:</strong> ${data.purchaseOrderNumber}</div>
+        ${getBarcodeSVG('barcode2')}
+        <div class="label-row"><strong>Identificación del producto del cliente:</strong> ${data.customerProductId}</div>
+        ${getBarcodeSVG('barcode3')}
+        <div class="label-row"><strong>Numero de pieza:</strong> ${data.mfrgPartNumber}</div>
+        ${getBarcodeSVG('barcode4')}
+        <div class="label-row"><strong>Cantidad:</strong> ${data.quantity}</div>
+        ${getBarcodeSVG('barcode5')}
+        <div class="label-row"><strong>ID del paquete:</strong> ${data.packageId}</div>
+        ${getBarcodeSVG('barcode6')}
+        <div class="label-row"><strong>Peso del paquete (lkg):</strong> ${data.packageWeight}</div>
+        <div style="text-align:right; font-size:10px; margin-top:8px;">Etiqueta ${i}</div>
     </div>
-    `;
+</div>
+`;
             }
             labelsHTML += '</div>';
 
